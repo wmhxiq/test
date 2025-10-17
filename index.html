@@ -79,18 +79,35 @@
   </div>
 
   <script>
-    // JavaScript to handle form submission
-    document.getElementById('userForm').addEventListener('submit', function(event) {
-      event.preventDefault(); // Prevent the form from reloading the page
+  document.getElementById('userForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent form reload
 
-      // Get values from the form
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const age = document.getElementById('age').value;
-      const gender = document.getElementById('gender').value;
+    // Get values from the form
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
 
-      // Display the data in the output section
-      if(name && email && age && gender) {
+    // Simple frontend validation
+    if (!name || !email || !age || !gender) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    try {
+      // Send data to the backend API
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, age, gender })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Show submitted data
         document.getElementById('outputName').textContent = name;
         document.getElementById('outputEmail').textContent = email;
         document.getElementById('outputAge').textContent = age;
@@ -98,12 +115,22 @@
 
         // Show the output section
         document.getElementById('output').style.display = 'block';
+
+        // Optional: alert the user
+        alert('Email sent successfully!');
       } else {
-        alert('Please fill in all fields.');
+        console.error(result);
+        alert('Failed to send email. Please try again later.');
       }
-    });
-  </script>
+    } catch (err) {
+      console.error('Error:', err);
+      alert('An error occurred. Check console for details.');
+    }
+  });
+</script>
+
 
 </body>
 </html>
+
 
