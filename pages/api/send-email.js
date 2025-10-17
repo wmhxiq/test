@@ -14,18 +14,18 @@ export default async function handler(req, res) {
   }
 
   const msg = {
-    to: email, // send to the person who filled out the form
+    to: email,
     from: process.env.FROM_EMAIL,
     subject: 'Thank you for your submission!',
-    text: `Hello ${name},\n\nThank you for submitting your information.\n\nAge: ${age}\nGender: ${gender}\n\nWe’ll be in touch!`,
-    html: `<p>Hello ${name},</p><p>Thank you for submitting your information.</p><ul><li><strong>Age:</strong> ${age}</li><li><strong>Gender:</strong> ${gender}</li></ul><p>We’ll be in touch!</p>`
+    text: `Hi ${name},\n\nWe received your submission:\n- Age: ${age}\n- Gender: ${gender}\n\nThank you!`,
+    html: `<p>Hi ${name},</p><p>We received your submission:</p><ul><li>Age: ${age}</li><li>Gender: ${gender}</li></ul><p>Thank you!</p>`
   };
 
   try {
     await sgMail.send(msg);
-    return res.status(200).json({ success: true, message: 'Email sent!' });
+    res.status(200).json({ success: true });
   } catch (error) {
-    console.error('[SendGrid Error]', error);
-    return res.status(500).json({ error: 'Failed to send email' });
+    console.error('[SendGrid Error]', error.response?.body || error);
+    res.status(500).json({ error: 'Failed to send email' });
   }
 }
