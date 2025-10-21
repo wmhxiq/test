@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Your Details</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+    .container {
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      width: 300px;
+    }
+    .input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 style="text-align: center;">Enter Your Details</h2>
+    <form id="details-form">
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        required
+        class="input"
+      />
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+        class="input"
+      />
+      <input
+        type="number"
+        id="age"
+        placeholder="Enter your age"
+        required
+        class="input"
+      />
+      <select
+        id="gender"
+        required
+        class="input"
+      >
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <button type="submit" class="button">Submit</button>
+    </form>
+
+    <div id="output" class="output" style="display: none;">
+      <h3>Your Submitted Info:</h3>
+      <p><strong>Name:</strong> <span id="submitted-name"></span></p>
+      <p><strong>Email:</strong> <span id="submitted-email"></span></p>
+      <p><strong>Age:</strong> <span id="submitted-age"></span></p>
+      <p><strong>Gender:</strong> <span id="submitted-gender"></span></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('details-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const age = document.getElementById('age').value;
+      const gender = document.getElementById('gender').value;
+
+      // Simple validation
+      if (!name || !email || !age || !gender) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      try {
+        const formData = { name, email, age, gender };
+
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Display submitted data
+          document.getElementById('submitted-name').textContent = formData.name;
+          document.getElementById('submitted-email').textContent = formData.email;
+          document.getElementById('submitted-age').textContent = formData.age;
+          document.getElementById('submitted-gender').textContent = formData.gender;
+
+          document.getElementById('output').style.display = 'block';
+          alert('Email sent successfully!');
+        } else {
+          console.error(result);
+          alert('Failed to send email. Please try again later.');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('An error occurred. Check console for details.');
+      }
+    });
+  </script>
+</body>
+</html>
